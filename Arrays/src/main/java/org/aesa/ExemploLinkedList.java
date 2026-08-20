@@ -1,6 +1,7 @@
 package org.aesa;
 
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class ExemploLinkedList {
     static void main() {

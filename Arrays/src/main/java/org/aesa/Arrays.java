@@ -17,15 +17,15 @@ public class Arrays {
         String[] carros = {"Fusca", "Gol", "Palio"};
 
         // Acessando o primeiro elemento
-        System.out.println(carros[0]); // Saída: Fusca
+        System.out.println(carros[0]);
 
         // Modificando o valor de um elemento
         carros[1] = "Civic";
-        System.out.println(carros[1]); // Saída: Civic
+        System.out.println(carros[1]);
 
         // Descobrindo o tamanho total do array
         int tamanho = carros.length;
-        System.out.println("Quantidade de carros: " + tamanho); // Saída: 3
+        System.out.println("Quantidade de carros: " + tamanho);
 
         //3 - Percorrendo um Array (Loops)
 
