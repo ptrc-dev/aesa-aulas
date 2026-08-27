@@ -1,6 +1,6 @@
 package org.aesa;
 
-public class Arrays {
+public class ExemploArrays {
     static void main() {
         //1 - Declarando e Inicializando Arrays
         // Opção A: Criando e já preenchendo com valores

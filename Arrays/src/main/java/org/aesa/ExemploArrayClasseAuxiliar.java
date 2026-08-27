@@ -2,7 +2,7 @@ package org.aesa;
 
 import java.util.Arrays;
 
-public class ArrayClasseAuxiliar {
+public class ExemploArrayClasseAuxiliar {
     static void main() {
         // 4. Usando a classe auxiliar
         // O java possui uma classe auxiliar chamada Arrays que oferece métodos úteis para manipular arrays
