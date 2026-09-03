@@ -30,10 +30,19 @@ Filas (Queues) [Wiki Queue](https://www.geeksforgeeks.org/java/queue-interface-j
 
 ## Estrutura de Dados - Não Lineares
 
-Estruturas Não Lineares são estruturas de armazenamento distinto
+Estruturas Não Lineares são estruturas de armazenamento não sequencial, onde os elementos se organizam de forma hierárquica ou em rede com múltiplos caminhos.
 
-Árvores
+Tabelas Hash (Hash Tables / HashMap) [Wiki HashMap](https://www.w3schools.com/java/java_hashmap.asp)
 
-Grafos
+- As Tabelas Hash armazenam dados no formato **chave-valor (Key-Value)** e utilizam uma função hash para calcular a posição na memória, oferecendo **busca, inserção e remoção extremamente rápidas (tempo médio O(1))**.
+- Imagine um guarda-volumes de um clube: em vez de procurar sua mochila abrindo armário por armário, você tem um número/código único (chave) que leva você diretamente ao armário certo (valor).
 
-Hash Tables
+Árvores (Trees) [Wiki Tree](https://www.geeksforgeeks.org/tree-data-structure/)
+
+- As Árvores organizam os dados de forma **hierárquica e ramificada**, iniciando em um elemento principal chamado **raiz (root)**, que se conecta a nós filhos (*children*), formando folhas (*leaves*), sem a presença de ciclos.
+- Imagine o sistema de pastas e arquivos do computador ou uma árvore genealógica: existe uma pasta raiz principal (ex: `C:` ou `/`) que contém pastas e subpastas filhas, onde cada uma pode ter múltiplos arquivos e pastas dentro de si.
+
+Grafos (Graphs) [Wiki Graph](https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/)
+
+- Os Grafos são estruturas em formato de **rede formadas por vértices (nós) e arestas (conexões)**, permitindo representar relações complexas de "muitos para muitos" (N para N), caminhos alternativos e ciclos.
+- Imagine uma rede de linhas de metrô ou uma rede social: cada estação ou usuário é um vértice (nó), e as conexões de trilhos ou amizades/seguidores são as arestas que conectam os diferentes pontos da rede.
