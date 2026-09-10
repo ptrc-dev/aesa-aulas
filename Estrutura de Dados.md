@@ -2,7 +2,7 @@
 
 [HackerRank](https://www.hackerrank.com/domains/java)
 [OnlineGdb](https://www.onlinegdb.com/online_java_compiler)
-[Programiz](https://www.programiz.com/java-programming/online-compiler/)
+[Programiz](https://www.programiz.com/java-programming/online-compiler/)\
 
 Estruturas Lineares são estruturas de armazenamento sequencial
 
@@ -46,3 +46,19 @@ Grafos (Graphs) [Wiki Graph](https://www.geeksforgeeks.org/graph-data-structure-
 
 - Os Grafos são estruturas em formato de **rede formadas por vértices (nós) e arestas (conexões)**, permitindo representar relações complexas de "muitos para muitos" (N para N), caminhos alternativos e ciclos.
 - Imagine uma rede de linhas de metrô ou uma rede social: cada estação ou usuário é um vértice (nó), e as conexões de trilhos ou amizades/seguidores são as arestas que conectam os diferentes pontos da rede.
+
+---
+
+### Atividades Práticas (Desafios)
+
+#### Estruturas Lineares:
+- [Desafio 01 - Arrays (Vetores)](Arrays/src/main/java/org/aesa/atividades/Desafio01_Arrays.java)
+- [Desafio 02 - ArrayList (Estrutura Dinâmica)](Arrays/src/main/java/org/aesa/atividades/Desafio02_ArrayList.java)
+- [Desafio 03 - LinkedList (Lista Encadeada)](Arrays/src/main/java/org/aesa/atividades/Desafio03_LinkedList.java)
+- [Desafio 04 - Pilha (Stack / LIFO)](Arrays/src/main/java/org/aesa/atividades/Desafio04_Pilha.java)
+- [Desafio 05 - Fila (Queue / FIFO)](Arrays/src/main/java/org/aesa/atividades/Desafio05_Fila.java)
+
+#### Estruturas Não Lineares:
+- [Desafio 06 - Tabela Hash (HashMap)](Arrays/src/main/java/org/aesa/atividades/Desafio06_HashTable.java)
+- [Desafio 07 - Árvore Binária de Busca (BST)](Arrays/src/main/java/org/aesa/atividades/Desafio07_Arvore.java)
+- [Desafio 08 - Grafo (Lista de Adjacência)](Arrays/src/main/java/org/aesa/atividades/Desafio08_Grafo.java)
