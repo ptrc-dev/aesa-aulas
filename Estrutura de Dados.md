@@ -2,7 +2,7 @@
 
 [HackerRank](https://www.hackerrank.com/domains/java)
 [OnlineGdb](https://www.onlinegdb.com/online_java_compiler)
-[Programiz](https://www.programiz.com/java-programming/online-compiler/)\
+[Programiz](https://www.programiz.com/java-programming/online-compiler)
 
 Estruturas Lineares são estruturas de armazenamento sequencial
 
@@ -62,12 +62,13 @@ Imagine procurar um elemento específico dentro de uma coleção de **1 milhão 
 - **Busca Linear ($O(n)$):** Se os dados estiverem em uma estrutura desordenada ou sequencial simples, é necessário verificar item por item. No pior cenário, são necessárias **1.000.000 de operações**.
 - **Busca Binária ($O(\log n)$):** Se os dados estiverem organizados em uma estrutura com **ordenação e acesso indexado direto** (como um Array ordenado), podemos olhar sempre o elemento do meio e descartar metade da coleção a cada rodada. O mesmo item em 1 milhão de registros é encontrado em no máximo **20 operações**!
 
-| Quantidade de Itens ($n$) | Busca Linear ($O(n)$) | Busca Binária ($O(\log n)$) | Ganho de Eficiência |
-| :--- | :--- | :--- | :--- |
-| **100** | 100 passos | ~7 passos | 14x mais rápido |
-| **10.000** | 10.000 passos | ~14 passos | 714x mais rápido |
-| **1.000.000** (1 milhão) | 1.000.000 passos | ~20 passos | **50.000x mais rápido** |
-| **1.000.000.000** (1 bilhão) | 1.000.000.000 passos | ~30 passos | **33.000.000x mais rápido** |
+
+| Quantidade de Itens ($n$)     | Busca Linear ($O(n)$) | Busca Binária ($O(\log n)$) | Ganho de Eficiência         |
+| :---------------------------- | :-------------------- | :--------------------------- | :--------------------------- |
+| **100**                       | 100 passos            | ~7 passos                    | 14x mais rápido             |
+| **10.000**                    | 10.000 passos         | ~14 passos                   | 714x mais rápido            |
+| **1.000.000** (1 milhão)     | 1.000.000 passos      | ~20 passos                   | **50.000x mais rápido**     |
+| **1.000.000.000** (1 bilhão) | 1.000.000.000 passos  | ~30 passos                   | **33.000.000x mais rápido** |
 
 ### Algoritmo de Busca Binária em Java
 
@@ -94,11 +95,11 @@ public static int buscaBinaria(int[] array, int alvo) {
 ```
 
 - **Por que isso mostra a importância das Estruturas de Dados?**
+
   - **O Array viabiliza a Busca Binária:** O algoritmo só funciona porque o Array armazena blocos contíguos na memória e fornece acesso indexado direto $O(1)$ (`array[meio]`).
   - **E se usássemos uma Lista Encadeada (LinkedList)?** A Busca Binária se torna ineficiente, pois para alcançar o elemento do meio é necessário percorrer nó por nó sequencialmente ($O(n)$).
   - **Conexão com Árvores Binárias de Busca (BST):** O princípio de dividir o caminho ao meio é a base das Árvores de Busca ($O(\log n)$).
   - **Conexão com Tabelas Hash (HashMap):** Quando precisamos de buscas ainda mais rápidas sem depender de ordenação, a Tabela Hash entrega busca em tempo constante médio $O(1)$.
-
 - Exemplo em código executável com medição de tempo e passos: [ExemploBuscaBinaria.java](Arrays/src/main/java/org/aesa/ExemploBuscaBinaria.java)
 
 ---
@@ -106,6 +107,7 @@ public static int buscaBinaria(int[] array, int alvo) {
 ### Atividades Práticas (Desafios)
 
 #### Estruturas Lineares:
+
 - [Desafio 01 - Arrays (Vetores)](Arrays/src/main/java/org/aesa/atividades/Desafio01_Arrays.java)
 - [Desafio 02 - ArrayList (Estrutura Dinâmica)](Arrays/src/main/java/org/aesa/atividades/Desafio02_ArrayList.java)
 - [Desafio 03 - LinkedList (Lista Encadeada)](Arrays/src/main/java/org/aesa/atividades/Desafio03_LinkedList.java)
@@ -113,10 +115,12 @@ public static int buscaBinaria(int[] array, int alvo) {
 - [Desafio 05 - Fila (Queue / FIFO)](Arrays/src/main/java/org/aesa/atividades/Desafio05_Fila.java)
 
 #### Estruturas Não Lineares:
+
 - [Desafio 06 - Tabela Hash (HashMap)](Arrays/src/main/java/org/aesa/atividades/Desafio06_HashTable.java)
 - [Desafio 07 - Árvore Binária de Busca (BST)](Arrays/src/main/java/org/aesa/atividades/Desafio07_Arvore.java)
 - [Desafio 08 - Grafo (Lista de Adjacência)](Arrays/src/main/java/org/aesa/atividades/Desafio08_Grafo.java)
 
 #### Desafios Comparativos:
+
 - [Desafio 09 - Comparativo: Array Tradicional vs ArrayList](Arrays/src/main/java/org/aesa/atividades/Desafio09_ArrayVsArrayList.java)
 - [Desafio 10 - Comparativo: Pilha (LIFO) vs Fila (FIFO)](Arrays/src/main/java/org/aesa/atividades/Desafio10_PilhaVsFila.java)
