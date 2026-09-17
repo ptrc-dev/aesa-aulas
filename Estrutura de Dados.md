@@ -124,6 +124,3 @@ public static int buscaBinaria(int[] array, int alvo) {
 
 - [Desafio 09 - Comparativo: Array Tradicional vs ArrayList](Arrays/src/main/java/org/aesa/atividades/Desafio09_ArrayVsArrayList.java)
 - [Desafio 10 - Comparativo: Pilha (LIFO) vs Fila (FIFO)](Arrays/src/main/java/org/aesa/atividades/Desafio10_PilhaVsFila.java)
-
-
-teste
