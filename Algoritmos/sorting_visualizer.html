@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulador de Algoritmos de Ordenação - AESA</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+</head>
+<body class="bg-transparent text-[var(--foreground)] antialiased p-4">
+  <div class="max-w-4xl mx-auto bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-xl space-y-6">
+    
+    <!-- Cabeçalho -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[var(--border)] pb-4 gap-4">
+      <div>
+        <h1 class="text-xl font-bold text-[var(--foreground)] tracking-tight flex items-center gap-2">
+          <span>📊</span> Simulador Visual de Algoritmos de Ordenação
+        </h1>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+          Demonstração interativa dos algoritmos para explicação didática em aula.
+        </p>
+      </div>
+
+      <!-- Seletor de Algoritmo -->
+      <div class="flex items-center gap-2">
+        <label for="algorithmSelect" class="text-xs font-semibold text-[var(--muted-foreground)]">Algoritmo:</label>
+        <select id="algorithmSelect" class="bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+          <option value="bubble">Bubble Sort - O(n²)</option>
+          <option value="insertion">Insertion Sort - O(n²)</option>
+          <option value="selection">Selection Sort - O(n²)</option>
+          <option value="merge">Merge Sort - O(n log n)</option>
+          <option value="quick">Quick Sort - O(n log n)</option>
+          <option value="heap">Heap Sort - O(n log n)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Painel de Controles -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-[var(--background)] p-3 rounded-xl border border-[var(--border)] items-center">
+      <!-- Botões de Ação -->
+      <div class="flex gap-2">
+        <button id="btnPlay" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+          <span id="playIcon">▶</span> <span id="playText">Iniciar</span>
+        </button>
+        <button id="btnStep" class="bg-[var(--card)] hover:bg-[var(--border)] text-[var(--foreground)] border border-[var(--border)] text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center gap-1">
+          ⏭ Passo
+        </button>
+        <button id="btnReset" class="bg-[var(--card)] hover:bg-[var(--border)] text-[var(--foreground)] border border-[var(--border)] text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center gap-1">
+          🔀 Novo
+        </button>
+      </div>
+
+      <!-- Controle de Velocidade -->
+      <div class="space-y-1.5">
+        <div class="flex justify-between text-xs text-[var(--muted-foreground)]">
+          <span class="font-medium">Velocidade:</span>
+          <span id="speedVal" class="font-mono font-semibold text-[var(--foreground)]">50ms</span>
+        </div>
+        <input id="speedSlider" type="range" min="5" max="300" value="50" step="5" class="w-full h-1.5 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]">
+        
+        <!-- Rádios de Velocidade Pré-definida (com limite de até 300ms) -->
+        <div class="flex items-center justify-between text-[10px] text-[var(--muted-foreground)] pt-0.5">
+          <label class="flex items-center gap-1 cursor-pointer hover:text-[var(--foreground)]" title="Muito rápido (20ms)">
+            <input type="radio" name="speedPreset" value="20" class="accent-[var(--primary)] cursor-pointer"> 20ms
+          </label>
+          <label class="flex items-center gap-1 cursor-pointer hover:text-[var(--foreground)]" title="Velocidade normal (50ms)">
+            <input type="radio" name="speedPreset" value="50" checked class="accent-[var(--primary)] cursor-pointer"> 50ms
+          </label>
+          <label class="flex items-center gap-1 cursor-pointer hover:text-[var(--foreground)]" title="Didático / Mais lento (150ms)">
+            <input type="radio" name="speedPreset" value="150" class="accent-[var(--primary)] cursor-pointer"> 150ms
+          </label>
+          <label class="flex items-center gap-1 cursor-pointer hover:text-[var(--foreground)] font-semibold text-amber-400" title="Limite máximo (300ms)">
+            <input type="radio" name="speedPreset" value="300" class="accent-[var(--primary)] cursor-pointer"> 300ms
+          </label>
+        </div>
+      </div>
+
+      <!-- Controle de Tamanho -->
+      <div class="space-y-1">
+        <div class="flex justify-between text-xs text-[var(--muted-foreground)]">
+          <span>Elementos:</span>
+          <span id="sizeVal" class="font-mono text-[var(--foreground)]">25</span>
+        </div>
+        <input id="sizeSlider" type="range" min="10" max="60" value="25" class="w-full h-1.5 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]">
+      </div>
+
+      <!-- Legenda Visual -->
+      <div class="text-[11px] grid grid-cols-2 gap-1 text-[var(--muted-foreground)]">
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Comparando</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Trocando</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span> Pivô/Chave</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Concluído</span>
+      </div>
+    </div>
+
+    <!-- Área de Visualização (Gráfico de Barras) -->
+    <div class="relative bg-[var(--background)] border border-[var(--border)] rounded-xl p-4 h-64 flex items-end justify-center gap-1 overflow-hidden" id="barsContainer">
+      <!-- As barras serão injetadas dinamicamente via JS -->
+    </div>
+
+    <!-- Placar de Métricas e Explicação do Passo -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="bg-[var(--background)] p-3 rounded-xl border border-[var(--border)]">
+        <span class="text-xs text-[var(--muted-foreground)] block">Comparações</span>
+        <span id="statComparisons" class="text-lg font-bold font-mono text-amber-400">0</span>
+      </div>
+      <div class="bg-[var(--background)] p-3 rounded-xl border border-[var(--border)]">
+        <span class="text-xs text-[var(--muted-foreground)] block">Trocas / Movimentações</span>
+        <span id="statSwaps" class="text-lg font-bold font-mono text-rose-400">0</span>
+      </div>
+      <div class="bg-[var(--background)] p-3 rounded-xl border border-[var(--border)]">
+        <span class="text-xs text-[var(--muted-foreground)] block">Complexidade Teórica</span>
+        <span id="statComplexity" class="text-xs font-semibold text-sky-400 mt-1 block">O(n²) Médio | O(1) Espaço</span>
+      </div>
+    </div>
+
+    <!-- Caixa de Descrição da Ação Atual -->
+    <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-xs flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-[var(--muted-foreground)]">Ação em tempo real:</span>
+        <span id="currentAction" class="font-mono text-[var(--foreground)]">Pronto para iniciar.</span>
+      </div>
+      <span id="statusBadge" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[var(--border)] text-[var(--muted-foreground)]">Aguardando</span>
+    </div>
+
+  </div>
+
+  <script>
+    // Estado Global da Animação
+    let array = [];
+    let generator = null;
+    let isRunning = false;
+    let timer = null;
+    let comparisons = 0;
+    let swaps = 0;
+
+    const barsContainer = document.getElementById('barsContainer');
+    const algSelect = document.getElementById('algorithmSelect');
+    const btnPlay = document.getElementById('btnPlay');
+    const btnStep = document.getElementById('btnStep');
+    const btnReset = document.getElementById('btnReset');
+    const speedSlider = document.getElementById('speedSlider');
+    const sizeSlider = document.getElementById('sizeSlider');
+    const speedVal = document.getElementById('speedVal');
+    const sizeVal = document.getElementById('sizeVal');
+    const playText = document.getElementById('playText');
+    const playIcon = document.getElementById('playIcon');
+    const statComparisons = document.getElementById('statComparisons');
+    const statSwaps = document.getElementById('statSwaps');
+    const statComplexity = document.getElementById('statComplexity');
+    const currentAction = document.getElementById('currentAction');
+    const statusBadge = document.getElementById('statusBadge');
+
+    const ALGORITHMS_METADATA = {
+      bubble: { name: 'Bubble Sort', comp: 'Tempo: O(n²) Médio | Espaço: O(1)', gen: genBubbleSort },
+      insertion: { name: 'Insertion Sort', comp: 'Tempo: O(n²) Médio, O(n) Melhor | Espaço: O(1)', gen: genInsertionSort },
+      selection: { name: 'Selection Sort', comp: 'Tempo: O(n²) Todos os Casos | Espaço: O(1)', gen: genSelectionSort },
+      merge: { name: 'Merge Sort', comp: 'Tempo: O(n log n) Garantido | Espaço: O(n)', gen: genMergeSort },
+      quick: { name: 'Quick Sort', comp: 'Tempo: O(n log n) Médio | Espaço: O(log n)', gen: genQuickSort },
+      heap: { name: 'Heap Sort', comp: 'Tempo: O(n log n) Garantido | Espaço: O(1)', gen: genHeapSort },
+    };
+
+    function generateArray(size) {
+      stopAnimation();
+      array = [];
+      for (let i = 0; i < size; i++) {
+        array.push(Math.floor(Math.random() * 85) + 10);
+      }
+      comparisons = 0;
+      swaps = 0;
+      updateStats();
+      currentAction.textContent = `Vetor gerado com ${size} elementos.`;
+      statusBadge.textContent = 'Pronto';
+      statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-semibold bg-sky-950 text-sky-400 border border-sky-800';
+      renderBars([], '');
+    }
+
+    function renderBars(highlights = [], type = '') {
+      barsContainer.innerHTML = '';
+      const maxVal = Math.max(...array, 1);
+
+      array.forEach((val, idx) => {
+        const bar = document.createElement('div');
+        bar.className = 'flex-1 rounded-t-sm transition-all duration-75 relative flex items-end justify-center';
+        bar.style.height = `${(val / maxVal) * 92}%`;
+
+        // Color coding
+        if (highlights.includes(idx)) {
+          if (type === 'compare') bar.className += ' bg-amber-400 shadow-md shadow-amber-400/30';
+          else if (type === 'swap' || type === 'insert') bar.className += ' bg-rose-500 shadow-md shadow-rose-500/30';
+          else if (type === 'pivot') bar.className += ' bg-purple-400 shadow-md shadow-purple-400/30';
+          else if (type === 'done') bar.className += ' bg-emerald-500';
+          else bar.className += ' bg-amber-400';
+        } else if (type === 'done') {
+          bar.className += ' bg-emerald-500/80';
+        } else {
+          bar.className += ' bg-sky-500/70 hover:bg-sky-400';
+        }
+
+        if (array.length <= 30) {
+          const label = document.createElement('span');
+          label.className = 'text-[9px] font-mono text-white mb-1 drop-shadow select-none';
+          label.textContent = val;
+          bar.appendChild(label);
+        }
+
+        barsContainer.appendChild(bar);
+      });
+    }
+
+    function updateStats() {
+      statComparisons.textContent = comparisons;
+      statSwaps.textContent = swaps;
+    }
+
+    // --- Geradores de Animação ---
+    function* genBubbleSort(arr) {
+      const n = arr.length;
+      for (let i = 0; i < n; i++) {
+        let swapped = false;
+        for (let j = 0; j < n - i - 1; j++) {
+          comparisons++;
+          yield { highlights: [j, j + 1], type: 'compare', desc: `Comparando arr[${j}]=${arr[j]} com arr[${j+1}]=${arr[j+1]}` };
+          if (arr[j] > arr[j + 1]) {
+            [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+            swaps++;
+            swapped = true;
+            yield { highlights: [j, j + 1], type: 'swap', desc: `Trocando ${arr[j+1]} com ${arr[j]}` };
+          }
+        }
+        if (!swapped) break;
+      }
+      yield { highlights: arr.map((_, i) => i), type: 'done', desc: 'Vetor totalmente ordenado!' };
+    }
+
+    function* genInsertionSort(arr) {
+      const n = arr.length;
+      for (let i = 1; i < n; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        yield { highlights: [i], type: 'pivot', desc: `Chave a ser inserida: ${key}` };
+        while (j >= 0) {
+          comparisons++;
+          yield { highlights: [j, j + 1], type: 'compare', desc: `Comparando chave ${key} com arr[${j}]=${arr[j]}` };
+          if (arr[j] > key) {
+            arr[j + 1] = arr[j];
+            swaps++;
+            yield { highlights: [j, j + 1], type: 'swap', desc: `Deslocando ${arr[j]} para a direita` };
+            j--;
+          } else {
+            break;
+          }
+        }
+        arr[j + 1] = key;
+        yield { highlights: [j + 1], type: 'insert', desc: `Chave ${key} posicionada no índice ${j+1}` };
+      }
+      yield { highlights: arr.map((_, i) => i), type: 'done', desc: 'Vetor totalmente ordenado!' };
+    }
+
+    function* genSelectionSort(arr) {
+      const n = arr.length;
+      for (let i = 0; i < n - 1; i++) {
+        let minIdx = i;
+        yield { highlights: [i], type: 'pivot', desc: `Buscando menor valor a partir do índice ${i}` };
+        for (let j = i + 1; j < n; j++) {
+          comparisons++;
+          yield { highlights: [j, minIdx], type: 'compare', desc: `Comparando arr[${j}]=${arr[j]} com menor ${arr[minIdx]}` };
+          if (arr[j] < arr[minIdx]) {
+            minIdx = j;
+            yield { highlights: [minIdx], type: 'pivot', desc: `Novo menor encontrado: ${arr[minIdx]}` };
+          }
+        }
+        if (minIdx !== i) {
+          [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+          swaps++;
+          yield { highlights: [i, minIdx], type: 'swap', desc: `Trocando menor ${arr[i]} para índice ${i}` };
+        }
+      }
+      yield { highlights: arr.map((_, i) => i), type: 'done', desc: 'Vetor totalmente ordenado!' };
+    }
+
+    function* genQuickSort(arr) {
+      function* partition(start, end) {
+        let pivot = arr[end];
+        yield { highlights: [end], type: 'pivot', desc: `Pivô selecionado: arr[${end}]=${pivot}` };
+        let i = start - 1;
+        for (let j = start; j < end; j++) {
+          comparisons++;
+          yield { highlights: [j, end], type: 'compare', desc: `Comparando arr[${j}]=${arr[j]} com pivô ${pivot}` };
+          if (arr[j] <= pivot) {
+            i++;
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+            swaps++;
+            yield { highlights: [i, j], type: 'swap', desc: `Trocando arr[${i}] com arr[${j}]` };
+          }
+        }
+        [arr[i + 1], arr[end]] = [arr[end], arr[i + 1]];
+        swaps++;
+        yield { highlights: [i + 1], type: 'insert', desc: `Pivô ${pivot} alocado no índice final ${i+1}` };
+        return i + 1;
+      }
+
+      function* quickSortHelper(start, end) {
+        if (start < end) {
+          const pIndex = yield* partition(start, end);
+          yield* quickSortHelper(start, pIndex - 1);
+          yield* quickSortHelper(pIndex + 1, end);
+        }
+      }
+
+      yield* quickSortHelper(0, arr.length - 1);
+      yield { highlights: arr.map((_, i) => i), type: 'done', desc: 'Vetor totalmente ordenado!' };
+    }
+
+    function* genMergeSort(arr) {
+      function* mergeSortHelper(start, end) {
+        if (end - start <= 1) return;
+        const mid = Math.floor((start + end) / 2);
+        yield* mergeSortHelper(start, mid);
+        yield* mergeSortHelper(mid, end);
+
+        const left = arr.slice(start, mid);
+        const right = arr.slice(mid, end);
+        let i = 0, j = 0, k = start;
+
+        while (i < left.length && j < right.length) {
+          comparisons++;
+          yield { highlights: [k, mid + j], type: 'compare', desc: `Intercalando: ${left[i]} e ${right[j]}` };
+          if (left[i] <= right[j]) {
+            arr[k] = left[i];
+            i++;
+          } else {
+            arr[k] = right[j];
+            j++;
+          }
+          swaps++;
+          yield { highlights: [k], type: 'insert', desc: `Inserindo ${arr[k]} na posição ${k}` };
+          k++;
+        }
+        while (i < left.length) {
+          arr[k] = left[i];
+          swaps++;
+          yield { highlights: [k], type: 'insert', desc: `Inserindo restante da esquerda ${left[i]}` };
+          i++; k++;
+        }
+        while (j < right.length) {
+          arr[k] = right[j];
+          swaps++;
+          yield { highlights: [k], type: 'insert', desc: `Inserindo restante da direita ${right[j]}` };
+          j++; k++;
+        }
+      }
+
+      yield* mergeSortHelper(0, arr.length);
+      yield { highlights: arr.map((_, i) => i), type: 'done', desc: 'Vetor totalmente ordenado!' };
+    }
+
+    function* genHeapSort(arr) {
+      const n = arr.length;
+      function* heapify(size, i) {
+        let largest = i;
+        let left = 2 * i + 1;
+        let right = 2 * i + 2;
+
+        if (left < size) {
+          comparisons++;
+          yield { highlights: [left, largest], type: 'compare', desc: `Heap: Comparando filho ${arr[left]} com pai ${arr[largest]}` };
+          if (arr[left] > arr[largest]) largest = left;
+        }
+        if (right < size) {
+          comparisons++;
+          yield { highlights: [right, largest], type: 'compare', desc: `Heap: Comparando filho ${arr[right]} com pai ${arr[largest]}` };
+          if (arr[right] > arr[largest]) largest = right;
+        }
+        if (largest !== i) {
+          [arr[i], arr[largest]] = [arr[largest], arr[i]];
+          swaps++;
+          yield { highlights: [i, largest], type: 'swap', desc: `Heap: Descendo elemento menor para ajustar árvore` };
+          yield* heapify(size, largest);
+        }
+      }
+
+      for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        yield* heapify(n, i);
+      }
+      yield { highlights: [0], type: 'pivot', desc: `Max-Heap construído! Maior elemento está na raiz: ${arr[0]}` };
+
+      for (let i = n - 1; i > 0; i--) {
+        [arr[0], arr[i]] = [arr[i], arr[0]];
+        swaps++;
+        yield { highlights: [0, i], type: 'swap', desc: `Extraindo raiz ${arr[i]} para posição final ${i}` };
+        yield* heapify(i, 0);
+      }
+      yield { highlights: arr.map((_, i) => i), type: 'done', desc: 'Vetor totalmente ordenado!' };
+    }
+
+    // --- Controle do Loop de Execução ---
+    function step() {
+      if (!generator) {
+        const algKey = algSelect.value;
+        generator = ALGORITHMS_METADATA[algKey].gen(array);
+      }
+
+      const res = generator.next();
+      if (!res.done && res.value) {
+        const { highlights, type, desc } = res.value;
+        currentAction.textContent = desc;
+        updateStats();
+        renderBars(highlights, type);
+
+        if (type === 'done') {
+          stopAnimation();
+          statusBadge.textContent = 'Concluído';
+          statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800';
+          return false;
+        }
+        return true;
+      } else {
+        stopAnimation();
+        statusBadge.textContent = 'Concluído';
+        return false;
+      }
+    }
+
+    function runLoop() {
+      if (!isRunning) return;
+      const hasNext = step();
+      if (hasNext && isRunning) {
+        const delay = parseInt(speedSlider.value);
+        timer = setTimeout(runLoop, delay);
+      }
+    }
+
+    function startAnimation() {
+      isRunning = true;
+      playText.textContent = 'Pausar';
+      playIcon.textContent = '⏸';
+      btnPlay.className = 'flex-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm';
+      statusBadge.textContent = 'Executando';
+      statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-950 text-amber-400 border border-amber-800';
+      runLoop();
+    }
+
+    function stopAnimation() {
+      isRunning = false;
+      if (timer) clearTimeout(timer);
+      timer = null;
+      playText.textContent = 'Iniciar';
+      playIcon.textContent = '▶';
+      btnPlay.className = 'flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm';
+    }
+
+    // Eventos
+    btnPlay.addEventListener('click', () => {
+      if (isRunning) stopAnimation();
+      else startAnimation();
+    });
+
+    btnStep.addEventListener('click', () => {
+      stopAnimation();
+      step();
+    });
+
+    btnReset.addEventListener('click', () => {
+      generateArray(parseInt(sizeSlider.value));
+    });
+
+    const speedRadios = document.querySelectorAll('input[name="speedPreset"]');
+
+    speedSlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      speedVal.textContent = `${val}ms`;
+      speedRadios.forEach(r => {
+        r.checked = (parseInt(r.value) === val);
+      });
+    });
+
+    speedRadios.forEach(r => {
+      r.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          speedSlider.value = e.target.value;
+          speedVal.textContent = `${e.target.value}ms`;
+        }
+      });
+    });
+
+    sizeSlider.addEventListener('input', (e) => {
+      sizeVal.textContent = e.target.value;
+      generateArray(parseInt(e.target.value));
+    });
+
+    algSelect.addEventListener('change', () => {
+      stopAnimation();
+      generator = null;
+      const meta = ALGORITHMS_METADATA[algSelect.value];
+      statComplexity.textContent = meta.comp;
+      generateArray(parseInt(sizeSlider.value));
+    });
+
+    // Inicialização
+    const metaInitial = ALGORITHMS_METADATA[algSelect.value];
+    statComplexity.textContent = metaInitial.comp;
+    generateArray(parseInt(sizeSlider.value));
+  </script>
+</body>
+</html>
