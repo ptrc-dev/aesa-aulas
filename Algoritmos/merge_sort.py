@@ -46,6 +46,11 @@ def merge_sort(arr: List[int]) -> List[int]:
         return arr
 
     # 1. Divisão: encontra o ponto médio e divide
+    # NOTA: O cálculo `len(arr) // 2` e os fatiamentos `[:meio]` funcionam apenas em
+    # ARRAYS / LISTAS INDEXADAS (acesso direto O(1)).
+    # Para LISTAS ENCADEADAS (Linked Lists), essa abordagem NÃO FUNCIONA, pois não há
+    # índices diretos; nelas, encontra-se o meio usando a técnica de dois ponteiros
+    # (Slow & Fast Pointers / Lebre e Tartaruga: slow anda 1 passo e fast anda 2).
     meio = len(arr) // 2
     left_half = merge_sort(arr[:meio]) # Aqui acontece uma recursão para ordenar a metade esquerda - ate sobrar um elemento ou nenhum
     right_half = merge_sort(arr[meio:]) # Aqui acontece uma recursão para ordenar a metade direita - ate sobrar um elemento ou nenhum
@@ -64,7 +69,7 @@ def _merge(left: List[int], right: List[int]) -> List[int]:
 
     # Compara elementos de ambos os lados e insere o menor
     while i < len(left) and j < len(right):
-        if left[i] <= right[j]:
+        if left[i] <= right[j]: # <= garante estabilidade, pois mantém a ordem relativa de elementos iguais
             merged.append(left[i])
             i += 1
         else:
@@ -76,59 +81,3 @@ def _merge(left: List[int], right: List[int]) -> List[int]:
     merged.extend(right[j:])
 
     return merged
-
-
-def merge_sort_didatico(arr: List[int], nivel: int = 0) -> List[int]:
-    """
-    Versão didática do Merge Sort que imprime na tela as divisões
-    e intercalações com indentação visual para fins pedagógicos.
-    """
-    indent = "  " * nivel
-    print(f"{indent}--> Dividindo: {arr}")
-
-    if len(arr) <= 1:
-        print(f"{indent}<-- Base atingida: {arr}")
-        return arr
-
-    mid = len(arr) // 2
-    left = merge_sort_didatico(arr[:mid], nivel + 1)
-    right = merge_sort_didatico(arr[mid:], nivel + 1)
-
-    resultado = _merge(left, right)
-    print(f"{indent}==> Intercalou {left} e {right} => {resultado}")
-    return resultado
-
-
-# =============================================================================
-# DEMONSTRAÇÕES E EXEMPLOS PRÁTICOS
-# =============================================================================
-if __name__ == "__main__":
-    print("=" * 60)
-    print("DEMONSTRAÇÃO DIDÁTICA DO MERGE SORT")
-    print("=" * 60)
-
-    # Exemplo 1: Visualização passo a passo da árvore de divisão e conquista
-    exemplo_didatico = [38, 27, 43, 3, 9, 82, 10]
-    print(f"\nArray Inicial: {exemplo_didatico}")
-    print("\nExecução Passo a Passo (Árvore de Execução):")
-    resultado_didatico = merge_sort_didatico(exemplo_didatico)
-    print(f"\nResultado Final Ordenado: {resultado_didatico}")
-
-    # Exemplo 2: Testes com diferentes cenários
-    cenarios = {
-        "Lista Aleatória": [64, 34, 25, 12, 22, 11, 90],
-        "Lista Já Ordenada": [1, 2, 3, 4, 5, 6, 7],
-        "Lista Invertida": [9, 8, 7, 6, 5, 4, 3, 2, 1],
-        "Elementos Duplicados": [5, 1, 3, 5, 2, 1, 5, 3],
-        "Lista com Negativos": [-5, 12, -30, 0, 8, -2, 15],
-    }
-
-    print("\n" + "=" * 60)
-    print("TESTES EM DIFERENTES CENÁRIOS:")
-    print("=" * 60)
-    for nome, dados in cenarios.items():
-        ordenado = merge_sort(dados)
-        print(f"[{nome}]")
-        print(f"  Entrada : {dados}")
-        print(f"  Saída   : {ordenado}\n")
-
