@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulador de Algoritmos de Busca - AESA</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --background: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --foreground: #f8fafc;
+      --muted-foreground: #94a3b8;
+      --primary: #3b82f6;
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body class="antialiased p-4 min-h-screen">
+  <div class="max-w-4xl mx-auto bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-xl space-y-6">
+    
+    <!-- Cabeçalho -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[var(--border)] pb-4 gap-4">
+      <div>
+        <h1 class="text-xl font-bold text-[var(--foreground)] tracking-tight flex items-center gap-2">
+          <span>🔍</span> Simulador Visual de Algoritmos de Busca
+        </h1>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+          Demonstração interativa: Busca Linear, Busca Binária e Hashing com Tabela Hash.
+        </p>
+      </div>
+
+      <!-- Seletor de Algoritmo -->
+      <div class="flex items-center gap-2">
+        <label for="algorithmSelect" class="text-xs font-semibold text-[var(--muted-foreground)]">Algoritmo:</label>
+        <select id="algorithmSelect" class="bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+          <option value="linear">Busca Linear - O(n)</option>
+          <option value="binary">Busca Binária - O(log n)</option>
+          <option value="hashing">Busca Hashing - O(1)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Painel de Controles -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-[var(--background)] p-3 rounded-xl border border-[var(--border)] items-center">
+      <!-- Botões de Ação -->
+      <div class="flex gap-2">
+        <button id="btnPlay" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+          <span id="playIcon">▶</span> <span id="playText">Buscar</span>
+        </button>
+        <button id="btnStep" class="bg-[var(--card)] hover:bg-[var(--border)] text-[var(--foreground)] border border-[var(--border)] text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center gap-1">
+          ⏭ Passo
+        </button>
+        <button id="btnReset" class="bg-[var(--card)] hover:bg-[var(--border)] text-[var(--foreground)] border border-[var(--border)] text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center gap-1">
+          🔀 Novo
+        </button>
+      </div>
+
+      <!-- Alvo a Procurar -->
+      <div class="flex items-center gap-2">
+        <label for="targetInput" class="text-xs font-semibold text-[var(--muted-foreground)] whitespace-nowrap">Alvo:</label>
+        <input type="number" id="targetInput" value="42" class="w-full bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-lg px-3 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- Velocidade -->
+      <div class="flex items-center gap-2">
+        <label for="speedSlider" class="text-xs font-semibold text-[var(--muted-foreground)] whitespace-nowrap">Velocidade:</label>
+        <input type="range" id="speedSlider" min="100" max="1200" value="500" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+      </div>
+
+      <!-- Status -->
+      <div class="text-xs text-right font-mono text-emerald-400 font-semibold" id="statusMessage">
+        Pronto para buscar
+      </div>
+    </div>
+
+    <!-- Painel de Informações Teóricas -->
+    <div id="infoPanel" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+      <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700">
+        <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Complexidade</span>
+        <span id="infoComp" class="font-bold text-amber-400">O(n)</span>
+      </div>
+      <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700">
+        <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Pré-Requisito</span>
+        <span id="infoReq" class="font-bold text-sky-400">Nenhum</span>
+      </div>
+      <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700">
+        <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Comparações</span>
+        <span id="compCounter" class="font-bold text-purple-400 font-mono">0</span>
+      </div>
+      <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700">
+        <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Resultado</span>
+        <span id="searchResult" class="font-bold text-slate-300 font-mono">-</span>
+      </div>
+    </div>
+
+    <!-- Área de Visualização Principal -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-6 min-h-[260px] flex flex-col justify-center items-center">
+      <!-- Container para Visualização de Arrays (Linear e Binária) -->
+      <div id="arrayContainer" class="flex flex-wrap gap-2 justify-center items-end w-full py-4"></div>
+
+      <!-- Container para Visualização de Tabela Hash -->
+      <div id="hashContainer" class="hidden w-full space-y-2"></div>
+    </div>
+
+    <!-- Registro Didático de Eventos (Log) -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-1.5">
+        <span>📜</span> Log de Execução Didática
+      </div>
+      <div id="logContainer" class="text-xs font-mono space-y-1 max-h-32 overflow-y-auto text-slate-300 pr-2">
+        <p class="text-slate-500">Selecione o algoritmo, defina o alvo e clique em "Buscar" ou "Passo".</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Estado da aplicação
+    let array = [];
+    const ARRAY_SIZE = 14;
+    let isRunning = false;
+    let timer = null;
+    let comparisons = 0;
+    let stepGenerator = null;
+
+    // Elementos DOM
+    const algorithmSelect = document.getElementById('algorithmSelect');
+    const btnPlay = document.getElementById('btnPlay');
+    const playText = document.getElementById('playText');
+    const playIcon = document.getElementById('playIcon');
+    const btnStep = document.getElementById('btnStep');
+    const btnReset = document.getElementById('btnReset');
+    const targetInput = document.getElementById('targetInput');
+    const speedSlider = document.getElementById('speedSlider');
+    const statusMessage = document.getElementById('statusMessage');
+    const compCounter = document.getElementById('compCounter');
+    const searchResult = document.getElementById('searchResult');
+    const infoComp = document.getElementById('infoComp');
+    const infoReq = document.getElementById('infoReq');
+    const arrayContainer = document.getElementById('arrayContainer');
+    const hashContainer = document.getElementById('hashContainer');
+    const logContainer = document.getElementById('logContainer');
+
+    function log(msg, colorClass = "text-slate-300") {
+      const p = document.createElement('p');
+      p.className = `${colorClass}`;
+      p.textContent = `> ${msg}`;
+      logContainer.appendChild(p);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function clearLog() {
+      logContainer.innerHTML = '';
+    }
+
+    function atualizarInfoTeorica() {
+      const algo = algorithmSelect.value;
+      if (algo === 'linear') {
+        infoComp.textContent = 'O(n)';
+        infoReq.textContent = 'Nenhum';
+        arrayContainer.classList.remove('hidden');
+        hashContainer.classList.add('hidden');
+      } else if (algo === 'binary') {
+        infoComp.textContent = 'O(log n)';
+        infoReq.textContent = 'Array Ordenado';
+        arrayContainer.classList.remove('hidden');
+        hashContainer.classList.add('hidden');
+      } else if (algo === 'hashing') {
+        infoComp.textContent = 'O(1) médio';
+        infoReq.textContent = 'Função Hash';
+        arrayContainer.classList.add('hidden');
+        hashContainer.classList.remove('hidden');
+      }
+    }
+
+    function gerarArray() {
+      const algo = algorithmSelect.value;
+      stopSearch();
+      clearLog();
+      comparisons = 0;
+      compCounter.textContent = '0';
+      searchResult.textContent = '-';
+      searchResult.className = 'font-bold text-slate-300 font-mono';
+      statusMessage.textContent = 'Pronto para buscar';
+
+      if (algo === 'hashing') {
+        renderizarTabelaHash();
+        return;
+      }
+
+      array = [];
+      const set = new Set();
+      while (set.size < ARRAY_SIZE) {
+        set.add(Math.floor(Math.random() * 90) + 10);
+      }
+      array = Array.from(set);
+
+      if (algo === 'binary') {
+        array.sort((a, b) => a - b);
+      }
+
+      // Escolhe um alvo padrão presente ou próximo
+      targetInput.value = array[Math.floor(Math.random() * array.length)];
+      renderizarArray();
+      log(`Novo vetor gerado com ${ARRAY_SIZE} elementos.`);
+    }
+
+    function renderizarArray(destaques = {}) {
+      arrayContainer.innerHTML = '';
+      array.forEach((val, idx) => {
+        const box = document.createElement('div');
+        box.className = 'flex flex-col items-center';
+
+        const elem = document.createElement('div');
+        elem.id = `box-${idx}`;
+        let bg = 'bg-slate-700 text-slate-200 border-slate-600';
+
+        if (destaques.descartado && destaques.descartado.includes(idx)) {
+          bg = 'bg-slate-900/60 text-slate-600 border-slate-800 opacity-40';
+        } else if (destaques.sucesso === idx) {
+          bg = 'bg-emerald-600 text-white border-emerald-400 font-bold scale-110 shadow-lg shadow-emerald-500/30';
+        } else if (destaques.meio === idx) {
+          bg = 'bg-amber-500 text-black border-amber-300 font-bold scale-105';
+        } else if (destaques.atual === idx) {
+          bg = 'bg-blue-600 text-white border-blue-400 font-bold scale-105';
+        } else if (destaques.ponteiroInicio === idx || destaques.ponteiroFim === idx) {
+          bg = 'bg-indigo-700 text-indigo-100 border-indigo-500';
+        }
+
+        elem.className = `w-11 h-11 flex items-center justify-center border-2 rounded-lg text-sm font-bold font-mono transition-all duration-200 ${bg}`;
+        elem.textContent = val;
+
+        const idxLabel = document.createElement('span');
+        idxLabel.className = 'text-[10px] text-slate-500 font-mono mt-1';
+        idxLabel.textContent = `[${idx}]`;
+
+        box.appendChild(elem);
+        box.appendChild(idxLabel);
+        arrayContainer.appendChild(box);
+      });
+    }
+
+    // Estrutura de Hashing
+    const HASH_TABLE_SIZE = 7;
+    let tabelaHash = [];
+
+    function renderizarTabelaHash(chaveDestaque = null, bucketDestaque = -1) {
+      tabelaHash = Array.from({ length: HASH_TABLE_SIZE }, () => []);
+      const chavesExemplo = [14, 21, 35, 10, 42, 17, 29, 5];
+      chavesExemplo.forEach(k => {
+        const idx = k % HASH_TABLE_SIZE;
+        tabelaHash[idx].push(k);
+      });
+
+      hashContainer.innerHTML = '';
+      const titulo = document.createElement('div');
+      titulo.className = 'text-xs text-slate-400 mb-2 font-mono flex justify-between items-center';
+      titulo.innerHTML = `<span>Função Hash: <b>h(chave) = chave % ${HASH_TABLE_SIZE}</b></span> <span>Buckets: ${HASH_TABLE_SIZE}</span>`;
+      hashContainer.appendChild(titulo);
+
+      tabelaHash.forEach((bucket, idx) => {
+        const row = document.createElement('div');
+        const isSelected = (idx === bucketDestaque);
+        row.className = `flex items-center gap-3 p-2 rounded-lg border transition-all ${
+          isSelected ? 'bg-blue-950/70 border-blue-500' : 'bg-slate-800/50 border-slate-700/60'
+        }`;
+
+        const bucketBadge = document.createElement('div');
+        bucketBadge.className = `w-20 px-2 py-1 rounded text-xs font-mono font-bold text-center ${
+          isSelected ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-300'
+        }`;
+        bucketBadge.textContent = `Bucket [${idx}]`;
+        row.appendChild(bucketBadge);
+
+        const itemsDiv = document.createElement('div');
+        itemsDiv.className = 'flex items-center gap-2 flex-wrap';
+
+        if (bucket.length === 0) {
+          itemsDiv.innerHTML = '<span class="text-xs text-slate-600 italic">vazio</span>';
+        } else {
+          bucket.forEach((item, itemIdx) => {
+            const itemBox = document.createElement('span');
+            let itemBg = 'bg-slate-700 text-slate-200 border-slate-600';
+            if (isSelected && item === chaveDestaque) {
+              itemBg = 'bg-emerald-600 text-white border-emerald-400 font-bold scale-105';
+            }
+            itemBox.className = `px-2.5 py-1 text-xs font-mono rounded border ${itemBg}`;
+            itemBox.textContent = item;
+            itemsDiv.appendChild(itemBox);
+
+            if (itemIdx < bucket.length - 1) {
+              const arrow = document.createElement('span');
+              arrow.className = 'text-slate-500 text-xs';
+              arrow.textContent = '→';
+              itemsDiv.appendChild(arrow);
+            }
+          });
+        }
+        row.appendChild(itemsDiv);
+        hashContainer.appendChild(row);
+      });
+    }
+
+    // Geradores dos Algoritmos (Passo a Passo)
+    function* buscaLinearGen(alvo) {
+      log(`Iniciando Busca Linear pelo alvo: ${alvo}`);
+      for (let i = 0; i < array.length; i++) {
+        comparisons++;
+        compCounter.textContent = comparisons;
+        renderizarArray({ atual: i });
+        log(`Passo ${comparisons}: Inspecionando índice [${i}] = ${array[i]}`);
+
+        if (array[i] === alvo) {
+          renderizarArray({ sucesso: i });
+          searchResult.textContent = `Encontrado no índice [${i}]`;
+          searchResult.className = 'font-bold text-emerald-400 font-mono';
+          statusMessage.textContent = 'Alvo Encontrado!';
+          log(`SUCESSO! Elemento ${alvo} localizado no índice [${i}].`, 'text-emerald-400 font-bold');
+          return;
+        }
+        yield;
+      }
+
+      renderizarArray();
+      searchResult.textContent = 'Não Encontrado (-1)';
+      searchResult.className = 'font-bold text-rose-400 font-mono';
+      statusMessage.textContent = 'Alvo Não Encontrado';
+      log(`FIM: O elemento ${alvo} não existe na lista.`, 'text-rose-400 font-bold');
+    }
+
+    function* buscaBinariaGen(alvo) {
+      log(`Iniciando Busca Binária pelo alvo: ${alvo}`);
+      let inicio = 0;
+      let fim = array.length - 1;
+      let descartados = [];
+
+      while (inicio <= fim) {
+        comparisons++;
+        compCounter.textContent = comparisons;
+        let meio = Math.floor((inicio + fim) / 2);
+
+        renderizarArray({
+          ponteiroInicio: inicio,
+          ponteiroFim: fim,
+          meio: meio,
+          descartado: descartados
+        });
+
+        log(`Passo ${comparisons}: Intervalo [${inicio}..${fim}] | Meio no índice [${meio}] = ${array[meio]}`);
+        yield;
+
+        if (array[meio] === alvo) {
+          renderizarArray({ sucesso: meio, descartado: descartados });
+          searchResult.textContent = `Encontrado no índice [${meio}]`;
+          searchResult.className = 'font-bold text-emerald-400 font-mono';
+          statusMessage.textContent = 'Alvo Encontrado!';
+          log(`SUCESSO! Elemento ${alvo} localizado no índice [${meio}].`, 'text-emerald-400 font-bold');
+          return;
+        } else if (array[meio] < alvo) {
+          log(`Como ${array[meio]} < ${alvo}, descartando metade esquerda.`);
+          for (let k = inicio; k <= meio; k++) descartados.push(k);
+          inicio = meio + 1;
+        } else {
+          log(`Como ${array[meio]} > ${alvo}, descartando metade direita.`);
+          for (let k = meio; k <= fim; k++) descartados.push(k);
+          fim = meio - 1;
+        }
+      }
+
+      for (let k = 0; k < array.length; k++) descartados.push(k);
+      renderizarArray({ descartado: descartados });
+      searchResult.textContent = 'Não Encontrado (-1)';
+      searchResult.className = 'font-bold text-rose-400 font-mono';
+      statusMessage.textContent = 'Alvo Não Encontrado';
+      log(`FIM: O elemento ${alvo} não existe no vetor ordenado.`, 'text-rose-400 font-bold');
+    }
+
+    function* buscaHashingGen(alvo) {
+      log(`Calculando Hash para a chave: ${alvo}`);
+      const bucketIdx = Math.abs(alvo % HASH_TABLE_SIZE);
+      log(`h(${alvo}) = ${alvo} % ${HASH_TABLE_SIZE} = Bucket [${bucketIdx}] (Tempo O(1) de cálculo!).`);
+      renderizarTabelaHash(null, bucketIdx);
+      yield;
+
+      const bucket = tabelaHash[bucketIdx];
+      let encontrado = false;
+
+      for (let i = 0; i < bucket.length; i++) {
+        comparisons++;
+        compCounter.textContent = comparisons;
+        if (bucket[i] === alvo) {
+          encontrado = true;
+          renderizarTabelaHash(alvo, bucketIdx);
+          searchResult.textContent = `Achado no Bucket [${bucketIdx}]`;
+          searchResult.className = 'font-bold text-emerald-400 font-mono';
+          statusMessage.textContent = 'Alvo Encontrado!';
+          log(`SUCESSO! Chave ${alvo} encontrada no Bucket [${bucketIdx}] em tempo O(1)!`, 'text-emerald-400 font-bold');
+          return;
+        }
+        yield;
+      }
+
+      renderizarTabelaHash(null, bucketIdx);
+      searchResult.textContent = 'Não Encontrado';
+      searchResult.className = 'font-bold text-rose-400 font-mono';
+      statusMessage.textContent = 'Alvo Ausente na Tabela';
+      log(`FIM: A chave ${alvo} foi mapeada para o Bucket [${bucketIdx}], mas não existe nele.`, 'text-rose-400 font-bold');
+    }
+
+    function iniciarOuPausar() {
+      if (isRunning) {
+        stopSearch();
+      } else {
+        startSearch();
+      }
+    }
+
+    function startSearch() {
+      const alvo = parseInt(targetInput.value, 10);
+      if (isNaN(alvo)) {
+        alert("Por favor, digite um número válido como alvo.");
+        return;
+      }
+
+      if (!stepGenerator) {
+        comparisons = 0;
+        compCounter.textContent = '0';
+        searchResult.textContent = '-';
+        clearLog();
+
+        const algo = algorithmSelect.value;
+        if (algo === 'linear') stepGenerator = buscaLinearGen(alvo);
+        else if (algo === 'binary') stepGenerator = buscaBinariaGen(alvo);
+        else if (algo === 'hashing') stepGenerator = buscaHashingGen(alvo);
+      }
+
+      isRunning = true;
+      playText.textContent = 'Pausar';
+      playIcon.textContent = '⏸';
+      btnPlay.className = 'flex-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm';
+      statusMessage.textContent = 'Buscando...';
+
+      executarPasso();
+    }
+
+    function stopSearch() {
+      isRunning = false;
+      if (timer) clearTimeout(timer);
+      playText.textContent = 'Buscar';
+      playIcon.textContent = '▶';
+      btnPlay.className = 'flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm';
+    }
+
+    function executarPasso() {
+      if (!stepGenerator) {
+        const alvo = parseInt(targetInput.value, 10);
+        if (isNaN(alvo)) return;
+        const algo = algorithmSelect.value;
+        if (algo === 'linear') stepGenerator = buscaLinearGen(alvo);
+        else if (algo === 'binary') stepGenerator = buscaBinariaGen(alvo);
+        else if (algo === 'hashing') stepGenerator = buscaHashingGen(alvo);
+      }
+
+      const res = stepGenerator.next();
+      if (res.done) {
+        stopSearch();
+        stepGenerator = null;
+        return;
+      }
+
+      if (isRunning) {
+        const delay = 1300 - parseInt(speedSlider.value, 10);
+        timer = setTimeout(executarPasso, delay);
+      }
+    }
+
+    function passoManual() {
+      if (isRunning) stopSearch();
+      executarPasso();
+    }
+
+    // Event Listeners
+    btnPlay.addEventListener('click', iniciarOuPausar);
+    btnStep.addEventListener('click', passoManual);
+    btnReset.addEventListener('click', () => {
+      stepGenerator = null;
+      gerarArray();
+    });
+    algorithmSelect.addEventListener('change', () => {
+      atualizarInfoTeorica();
+      stepGenerator = null;
+      gerarArray();
+    });
+
+    // Inicialização
+    atualizarInfoTeorica();
+    gerarArray();
+  </script>
+</body>
+</html>
+
