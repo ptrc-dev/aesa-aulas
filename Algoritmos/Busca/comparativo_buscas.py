@@ -17,7 +17,7 @@ import random
 from typing import List, Tuple
 from busca_linear import busca_linear
 from busca_binaria import busca_binaria_iterativa
-from busca_hashing import TabelaHashEncadeada
+from busca_hashing import TabelaHash
 
 
 def testar_desempenho(tamanho: int) -> None:
@@ -31,7 +31,7 @@ def testar_desempenho(tamanho: int) -> None:
 
     # Monta a Tabela Hash
     t0_hash = time.perf_counter()
-    tabela_hash = TabelaHashEncadeada(capacidade=tamanho * 2)
+    tabela_hash = TabelaHash(tamanho=tamanho * 2)
     for num in dados:
         tabela_hash.inserir(num, f"Valor_{num}")
     tempo_carga_hash = (time.perf_counter() - t0_hash) * 1000
