@@ -14,8 +14,10 @@ def busca_binaria_iterativa(arr: List[int], alvo: int) -> int:
     inicio = 0
     fim = len(arr) - 1
 
+    ## [1,3,5],[6,8,9] = alvo = 6
+
     while inicio <= fim:
-        meio = (inicio + fim) // 2
+        meio = (inicio + fim) // 2 
 
         # Encontrou o elemento
         if arr[meio] == alvo:
